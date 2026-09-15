@@ -5,9 +5,11 @@ const logger = require('../utils/logger')(__filename)
 function applePayEnabled (charge) {
   const applePayEnabledForWorldpay = (process.env.WORLDPAY_APPLE_PAY_ENABLED || 'true') === 'true'
   const applePayEnabledForStripe = (process.env.STRIPE_APPLE_PAY_ENABLED || 'true') === 'true'
+  const applePayEnabledForAdyen = (process.env.ADYEN_APPLE_PAY_ENABLED || 'true') === 'true'
 
   const globallyEnabledForProvider = ((charge.paymentProvider === 'worldpay' || charge.paymentProvider === 'sandbox') && applePayEnabledForWorldpay) ||
-    (charge.paymentProvider === 'stripe' && applePayEnabledForStripe)
+    (charge.paymentProvider === 'stripe' && applePayEnabledForStripe) ||
+    (charge.paymentProvider === 'adyen' && applePayEnabledForAdyen)
 
   return (globallyEnabledForProvider || shouldOverrideGlobalWalletFlagForGatewayAccount(charge)) &&
     charge.gatewayAccount.allowApplePay
@@ -16,9 +18,12 @@ function applePayEnabled (charge) {
 function googlePayEnabled (charge) {
   const googlePayEnabledForWorldpay = (process.env.WORLDPAY_GOOGLE_PAY_ENABLED || 'true') === 'true'
   const googlePayEnabledForStripe = (process.env.STRIPE_GOOGLE_PAY_ENABLED || 'true') === 'true'
+  const googlePayEnabledForAdyen = (process.env.ADYEN_GOOGLE_PAY_ENABLED || 'true') === 'true'
+
 
   const globallyEnabledForProvider = (charge.paymentProvider === 'worldpay' && googlePayEnabledForWorldpay) ||
     (charge.paymentProvider === 'stripe' && googlePayEnabledForStripe) ||
+    (charge.paymentProvider === 'adyen' && googlePayEnabledForAdyen) ||
     charge.paymentProvider === 'sandbox'
 
   return (globallyEnabledForProvider || shouldOverrideGlobalWalletFlagForGatewayAccount(charge)) &&
