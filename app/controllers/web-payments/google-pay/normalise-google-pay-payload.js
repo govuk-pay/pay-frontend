@@ -105,6 +105,7 @@ module.exports = (req, paymentProvider) => {
         token_id: paymentData.id
       }
     case 'adyen':
+      logger.info('Ayden payload *****', { payload })
       paymentInfo.js_enabled = payload.paymentResponse.browser_info.js_enabled
       paymentInfo.js_navigator_language = payload.paymentResponse.browser_info.js_navigator_language
       paymentInfo.js_screen_color_depth = payload.paymentResponse.browser_info.js_screen_color_depth
