@@ -132,24 +132,24 @@ const getBrowserInfo = () => {
   let browserInfo = {}
 
   if (typeof navigator.language === 'string') {
-    browserInfo.js_navigator_language = navigator.language
+    browserInfo.jsNavigatorLanguage = navigator.language
   }
 
   if (typeof window.screen.colorDepth === 'number') {
-    browserInfo.js_screen_color_depth = window.screen.colorDepth
+    browserInfo.jsScreenColorDepth = window.screen.colorDepth
   }
 
   if (typeof window.screen.height === 'number') {
-    browserInfo.js_screen_height = window.screen.height
+    browserInfo.jsScreenHeight = window.screen.height
   }
 
   if (typeof window.screen.height === 'number') {
-    browserInfo.js_screen_width = window.screen.width
+    browserInfo.jsScreenWidth = window.screen.width
   }
 
   const timezoneOffset = new Date().getTimezoneOffset()
   if (typeof timezoneOffset === 'number') {
-    browserInfo.js_timezone_offset_mins = timezoneOffset
+    browserInfo.jsTimezoneOffsetMins = timezoneOffset
   }
 
   return browserInfo

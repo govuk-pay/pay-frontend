@@ -1,6 +1,5 @@
 'use strict'
 
-const { keysToCamelCase } = require('../../../utils/key-camelizer')
 const { getBrowserInfo } = require('./web-payments/helpers')
 
 const init = () => {
@@ -11,7 +10,7 @@ const init = () => {
 
 const addAdditionalInformation = () => {
   document.getElementById('jsEnabled').value = 'true'
-  const browserInfo = keysToCamelCase(getBrowserInfo())
+  const browserInfo = getBrowserInfo()
 
   for (const [key, value] of Object.entries(browserInfo)) {
     appendHiddenInputToForm(key, value)

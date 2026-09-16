@@ -105,13 +105,13 @@ module.exports = (req, paymentProvider) => {
         token_id: paymentData.id
       }
     case 'adyen':
-      logger.info('Ayden payload *****', { payload })
-      paymentInfo.js_enabled = payload.paymentResponse.browser_info.js_enabled
-      paymentInfo.js_navigator_language = payload.paymentResponse.browser_info.js_navigator_language
-      paymentInfo.js_screen_color_depth = payload.paymentResponse.browser_info.js_screen_color_depth
-      paymentInfo.js_screen_height = payload.paymentResponse.browser_info.js_screen_height
-      paymentInfo.js_screen_width = payload.paymentResponse.browser_info.js_screen_width
-      paymentInfo.js_timezone_offset_mins = payload.paymentResponse.browser_info.js_timezone_offset_mins
+      logger.info('Adyen payload *****', { payload })
+      paymentInfo.js_enabled = payload.paymentResponse.browserInfo.jsEnabled
+      paymentInfo.js_navigator_language = payload.paymentResponse.browserInfo.jsNavigatorLanguage
+      paymentInfo.js_screen_color_depth = payload.paymentResponse.browserInfo.jsScreenColorDepth
+      paymentInfo.js_screen_height = payload.paymentResponse.browserInfo.jsScreenHeight
+      paymentInfo.js_screen_width = payload.paymentResponse.browserInfo.jsScreenWidth
+      paymentInfo.js_timezone_offset_mins = payload.paymentResponse.browserInfo.jsTimezoneOffsetMins
       return {
         payment_info: paymentInfo,
         token: token

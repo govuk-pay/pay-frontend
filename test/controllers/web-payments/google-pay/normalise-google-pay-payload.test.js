@@ -95,13 +95,13 @@ describe('normalise Google Pay payload', () => {
   it('should return the correct format for the payload if payment provider is Adyen', () => {
     const googlePayPayload = {
       paymentResponse: {
-        browser_info: {
-          js_enabled: true,
-          js_navigator_language: 'en-GB',
-          js_screen_color_depth: 24,
-          js_screen_height: 1024,
-          js_screen_width: 2048,
-          js_timezone_offset_mins: -60
+        browserInfo: {
+          jsEnabled: true,
+          jsNavigatorLanguage: 'en-GB',
+          jsScreenColorDepth: 24,
+          jsScreenHeight: 1024,
+          jsScreenWidth: 2048,
+          jsTimezoneOffsetMins: -60
         },
         details: {
           apiVersionMinor: 0,
