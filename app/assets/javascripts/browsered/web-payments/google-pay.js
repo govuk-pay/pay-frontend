@@ -10,6 +10,11 @@ const submitGooglePayAuthRequest = (paymentResponse) => {
     paymentResponse: paymentResponse
   }
 
+  if (payment_provider === 'adyen' && Charge.collect_additional_browser_info_adyen === true) { // eslint-disable-line camelcase
+    requestBody.browserInfo = getBrowserInfo()
+    requestBody.browserInfo.jsEnabled = true
+  }
+
   if (typeof Charge.googlePayWorldpay3dsFlexDeviceDataCollectionStatus === 'string') {
     requestBody.worldpay3dsFlexDdcStatus = Charge.googlePayWorldpay3dsFlexDeviceDataCollectionStatus
   }
@@ -111,11 +116,6 @@ const performDeviceDataCollectionForGooglePay = (paymentData) => {
 const processPayment = paymentData => {
   toggleSubmitButtons()
   showSpinnerAndHideMainContent()
-
-  if (payment_provider === 'adyen' && Charge.collect_additional_browser_info_adyen === true) { // eslint-disable-line camelcase
-    paymentData.browserInfo = getBrowserInfo()
-    paymentData.browserInfo.jsEnabled = true
-  }
 
   // attempt device data collection for worldpay only
   if (payment_provider === 'worldpay') { // eslint-disable-line camelcase

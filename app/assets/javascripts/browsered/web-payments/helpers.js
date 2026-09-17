@@ -129,7 +129,7 @@ const getGooglePaymentsConfiguration = (paymentProvider) => {
 }
 
 const getBrowserInfo = () => {
-  let browserInfo = {}
+  const browserInfo = {}
 
   if (typeof navigator.language === 'string') {
     browserInfo.jsNavigatorLanguage = navigator.language

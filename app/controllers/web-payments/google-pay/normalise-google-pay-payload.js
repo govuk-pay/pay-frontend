@@ -96,6 +96,7 @@ module.exports = (req, paymentProvider) => {
 
   const token = payload.paymentResponse.details.paymentMethodData.tokenizationData.token
   const paymentData = keysToSnakeCase(JSON.parse(token))
+  const browserInfo = payload.browserInfo
   delete payload.paymentResponse.details.paymentMethodData
 
   switch (paymentProvider) {
@@ -106,12 +107,30 @@ module.exports = (req, paymentProvider) => {
       }
     case 'adyen':
       logger.info('Adyen payload *****', { payload })
-      paymentInfo.js_enabled = payload.paymentResponse.browserInfo.jsEnabled
-      paymentInfo.js_navigator_language = payload.paymentResponse.browserInfo.jsNavigatorLanguage
-      paymentInfo.js_screen_color_depth = payload.paymentResponse.browserInfo.jsScreenColorDepth
-      paymentInfo.js_screen_height = payload.paymentResponse.browserInfo.jsScreenHeight
-      paymentInfo.js_screen_width = payload.paymentResponse.browserInfo.jsScreenWidth
-      paymentInfo.js_timezone_offset_mins = payload.paymentResponse.browserInfo.jsTimezoneOffsetMins
+      if (browserInfo.jsEnabled) {
+        paymentInfo.js_enabled = browserInfo.jsEnabled
+      }
+
+      if (browserInfo.jsNavigatorLanguage) {
+        paymentInfo.js_navigator_language = browserInfo.jsNavigatorLanguage
+      }
+
+      if (browserInfo.jsScreenColorDepth) {
+        paymentInfo.js_screen_color_depth = browserInfo.jsScreenColorDepth
+      }
+
+      if (browserInfo.jsScreenHeight) {
+        paymentInfo.js_screen_height = browserInfo.jsScreenHeight
+      }
+
+      if (browserInfo.jsScreenWidth) {
+        paymentInfo.js_screen_width = browserInfo.jsScreenWidth
+      }
+
+      if (browserInfo.jsTimezoneOffsetMins) {
+        paymentInfo.js_timezone_offset_mins = browserInfo.jsTimezoneOffsetMins
+      }
+
       return {
         payment_info: paymentInfo,
         token: token
