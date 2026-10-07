@@ -1,3 +1,4 @@
+---
 version: 2
 updates:
 - package-ecosystem: npm
@@ -12,7 +13,7 @@ updates:
   - javascript
   cooldown:
     exclude:
-      - "@govuk-pay/*"
+    - "@govuk-pay/*"
   ignore:
   - dependency-name: "@aws-crypto/decrypt-node"
     versions: ["2.x", "3.x", "4.x"]
@@ -54,3 +55,12 @@ updates:
   - govuk-pay
   - dependencies
   - github_actions
+- package-ecosystem: github-actions
+  directory: /.github/workflows
+  schedule:
+    interval: daily
+    time: 03:00
+  open-pull-requests-limit: 3
+  cooldown: 3
+  allow:
+  - dependency-name: govuk-pay/pay-ci/*
