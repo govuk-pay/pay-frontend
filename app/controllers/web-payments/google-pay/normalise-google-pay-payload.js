@@ -106,7 +106,6 @@ module.exports = (req, paymentProvider) => {
         token_id: paymentData.id
       }
     case 'adyen':
-      logger.info('Adyen payload *****', { payload })
       if (browserInfo.jsEnabled) {
         paymentInfo.js_enabled = browserInfo.jsEnabled
       }
