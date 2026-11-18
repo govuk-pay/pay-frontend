@@ -4,6 +4,7 @@ const logger = require('../../../utils/logger')(__filename)
 const { getLoggingFields } = require('../../../utils/logging-fields-helper')
 const axios = require('axios')
 const { HttpsProxyAgent } = require('hpagent')
+const { isValidApplePayUrl } = require('../../../utils/apple-pay/apple-pay-url-validation')
 const proxyUrl = process.env.HTTPS_PROXY
 
 function getCertificateMultiline (cert) {
@@ -50,7 +51,7 @@ function getApplePayMerchantIdentityVariables (paymentProvider, gatewayAccountTy
         default:
           logger.error(`Unexpected gatewayAccountType [${gatewayAccountType}] when getting Merchant Identity variables for Apple Pay`)
           return false
-        }
+      }
     default:
       logger.error(`Unexpected payment provider [${paymentProvider}] when getting Merchant Identity variables for Apple Pay`)
       return false
@@ -69,15 +70,20 @@ module.exports = async (req, res) => {
   if (!merchantIdentityVars) {
     return res.sendStatus(400)
   }
-  logApplePayUrl(req)
+  const loggingFields = getLoggingFields(req)
 
-  if (proxyUrl) {
-    logger.info('Using proxy URL')
-  } else {
-    logger.info('No proxy URL. Warning: this would only happen when running locally without egress proxy.')
+  const urlValidationResult = isValidApplePayUrl(req.body.url)
+  if (!urlValidationResult.isValid) {
+    logger.error('Invalid URL provided for Apple Pay payment', {
+      ...loggingFields,
+      error: urlValidationResult.reason
+    })
+    return res.sendStatus(400)
   }
 
-  logger.info('Generating Apple Pay session via axios and https proxy agent (hpagent)')
+  logger.info('Generating Apple Pay session via axios and https proxy agent (hpagent)', {
+    ...loggingFields
+  })
 
   const data = {
     merchantIdentifier: merchantIdentityVars.merchantIdentifier,
@@ -97,24 +103,16 @@ module.exports = async (req, res) => {
   try {
     const response = await axiosInstance.post(url, data, { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
 
-    logger.info('Apple Pay session successfully generated via axios and https proxy agent (hpagent)')
+    logger.info('Apple Pay session successfully generated via axios and https proxy agent (hpagent)', {
+      ...loggingFields
+    })
     res.status(200).send(response.data)
   } catch (error) {
     logger.info('Error generating Apple Pay session with axios and https proxy agent (hpagent)', {
-      ...getLoggingFields(req),
+      ...loggingFields,
       error: error.message,
       status: error.response ? error.response.status : 'No status'
     })
-    logger.info('Apple Pay session via axios and https proxy agent (hpagent) failed', 'Apple Pay Error')
     res.status(500).send('Apple Pay Error')
   }
-}
-
-function logApplePayUrl (req) {
-  const url = URL.parse(req.body.url)
-
-  logger.info('Apple Pay URL', {
-    ...getLoggingFields(req),
-    apple_pay_validation_url: url?.origin ?? 'Unable to parse URL'
-  })
 }
