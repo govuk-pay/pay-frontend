@@ -69,6 +69,7 @@ module.exports = async (req, res) => {
   if (!merchantIdentityVars) {
     return res.sendStatus(400)
   }
+  logApplePayUrl(req)
 
   if (proxyUrl) {
     logger.info('Using proxy URL')
@@ -107,4 +108,13 @@ module.exports = async (req, res) => {
     logger.info('Apple Pay session via axios and https proxy agent (hpagent) failed', 'Apple Pay Error')
     res.status(500).send('Apple Pay Error')
   }
+}
+
+function logApplePayUrl (req) {
+  const url = URL.parse(req.body.url)
+
+  logger.info('Apple Pay URL', {
+    ...getLoggingFields(req),
+    apple_pay_validation_url: url?.origin ?? 'Unable to parse URL'
+  })
 }
