@@ -16,7 +16,7 @@ const adyenLiveCertificate = 'AN-ADYEN-LIVE-CERTIFICATE'
 const adyenLiveKey = 'AN-ADYEN-LIVE-KEY'
 const adyenTestCertificate = 'AN-ADYEN-TEST-CERTIFICATE'
 const adyenTestKey = 'AN-ADYEN-TEST-KEY'
-const url = 'https://fakeapple.url'
+const url = 'https://apple-pay-gateway.apple.com'
 
 const appleResponse = { status: 200, data: { foo: 'bar' } }
 
@@ -24,10 +24,15 @@ const hpagentMock = {
   HttpsProxyAgent: sinon.stub().returns({})
 }
 
+const applePayUrlValidationMock = {
+  isValidApplePayUrl: sinon.stub()
+}
+
 function getControllerWithMocks (axiosMock) {
   return proxyquire('../../../../app/controllers/web-payments/apple-pay/merchant-validation.controller', {
     axios: axiosMock,
-    hpagent: hpagentMock
+    hpagent: hpagentMock,
+    '../../../utils/apple-pay/apple-pay-url-validation': applePayUrlValidationMock
   })
 }
 
@@ -56,6 +61,14 @@ describe('Validate with Apple the merchant is legitimate', () => {
       status: sinon.spy(() => ({ send: sendSpy })),
       sendStatus: sinon.spy()
     }
+
+    applePayUrlValidationMock.isValidApplePayUrl.returns({
+      isValid: true
+    })
+  })
+
+  afterEach(() => {
+    sinon.resetHistory()
   })
 
   describe('when there is a proxy', () => {
@@ -307,6 +320,26 @@ describe('Validate with Apple the merchant is legitimate', () => {
     sinon.assert.notCalled(axiosStub)
   })
 
+  it('should return a 400 if an invalid URL is provided', async () => {
+    const axiosStub = sinon.stub().resolves({ data: appleResponse.data, status: 200 })
+    const controller = getControllerWithMocks(axiosStub)
+
+    applePayUrlValidationMock.isValidApplePayUrl.returns({
+      isValid: false,
+      reason: 'URL Invalid for some reason'
+    })
+
+    const req = {
+      body: {
+        paymentProvider: 'worldpay',
+        gatewayAccountType: 'live'
+      }
+    }
+    await controller(req, res)
+    sinon.assert.calledWith(res.sendStatus, 400)
+    sinon.assert.notCalled(axiosStub)
+  })
+
   it('should return 400 for unexpected payment provider', async () => {
     const axiosStub = sinon.stub().resolves({ data: appleResponse.data, status: 200 })
     const controller = getControllerWithMocks(axiosStub)
@@ -323,7 +356,7 @@ describe('Validate with Apple the merchant is legitimate', () => {
     sinon.assert.notCalled(axiosStub)
   })
 
-    it('should return 400 for unexpected gateway account type', async () => {
+  it('should return 400 for unexpected gateway account type', async () => {
     const axiosStub = sinon.stub().resolves({ data: appleResponse.data, status: 200 })
     const controller = getControllerWithMocks(axiosStub)
 
